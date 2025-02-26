@@ -1,9 +1,13 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { TrendingItemComponent } from "../../components/trending-item/trending-item.component";
+import { TrendingService } from './trending.service';
 
 @Component({
   selector: 'app-trending-page',
-  imports: [],
+  imports: [TrendingItemComponent],
   templateUrl: './trending-page.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class TrendingPageComponent { }
+export default class TrendingPageComponent { 
+
+  trendeingService = inject(TrendingService)
+}
