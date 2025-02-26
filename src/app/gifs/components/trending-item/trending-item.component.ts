@@ -1,4 +1,5 @@
 import { Component, input } from '@angular/core';
+import { Gif } from '../../interfaces/gif.interface';
 
 @Component({
   selector: 'app-trending-item',
@@ -6,5 +7,5 @@ import { Component, input } from '@angular/core';
   templateUrl: './trending-item.component.html',
 })
 export class TrendingItemComponent {
-  imageUrl = input.required<string>();
+  gif = input.required<Gif>();
 }

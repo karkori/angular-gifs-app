@@ -1,33 +1,37 @@
-import { Injectable, OnInit, signal } from '@angular/core';
-
-// simulate fetching data
-const imageUrls: string[] = [
-  'https://flowbite.s3.amazonaws.com/docs/gallery/square/image.jpg',
-  'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-1.jpg',
-  'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-2.jpg',
-  'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-3.jpg',
-  'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-4.jpg',
-  'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-5.jpg',
-  'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-6.jpg',
-  'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-7.jpg',
-  'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-8.jpg',
-  'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-9.jpg',
-  'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-10.jpg',
-  'https://flowbite.s3.amazonaws.com/docs/gallery/square/image-11.jpg',
-];
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable, signal } from '@angular/core';
+import { environment } from '@envs/environment';
+import type { GiphyResponse } from '../../interfaces/giphy.interfaces';
+import { Gif } from '../../interfaces/gif.interface';
+import { GiphyMapper } from '../../giphy.mapper';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TrendingService {
+  trendingGifs = signal<Gif[]>([]);
 
-  trendingGifs = signal<string[]>([]);
-  
+  http = inject(HttpClient);
+
   constructor() {
     this.fetchTrending();
   }
 
   fetchTrending = () => {
-    this.trendingGifs.set(imageUrls);
+    const apikey = environment.giphy_api_key;
+    const url = environment.giphy_api_url;
+    this.http
+      .get<GiphyResponse>(`${url}/trending`, 
+        {
+          params: {
+            api_key: apikey,
+            limit: 20
+          },
+        }
+      )
+      .subscribe((response) => {
+        const gifs = response.data.map(GiphyMapper.mapToGif);
+        this.trendingGifs.set(gifs);
+      });
   };
 }
